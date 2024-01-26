@@ -1,19 +1,63 @@
+import { useContext, useRef } from "react";
+import {PostList} from '../store/post-list-store'
+
 const CreatePost = () => {
-    return <form>
+
+  const {addPost} = useContext(PostList)
+
+  const idEle = useRef();
+  const titleEle = useRef();
+  const bodyEle = useRef();
+  const reactionsEle = useRef();
+  const userIdEle = useRef();
+  const tagsEle = useRef();
+
+  const handleForm = (event) => {
+    event.preventDefault();
+    const postId = idEle.current.value;
+    const postTitle = titleEle.current.value;
+    const postBody = bodyEle.current.value;
+    const postReactions = reactionsEle.current.value;
+    const postUserid = userIdEle.current.value;
+    const postTags = tagsEle.current.value;
+
+    addPost(postId, postTitle, postBody, postReactions, postUserid, postTags)
+  }
+
+
+    return <form className="p-3 ms-3 me-3" onSubmit={handleForm}>
     <div className="mb-3">
-      <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-      <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"/>
-      <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+      <label  className="form-label">Post ID</label>
+      <input ref={idEle} type="text" className="form-control" />  
     </div>
+    
     <div className="mb-3">
-      <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-      <input type="password" className="form-control" id="exampleInputPassword1"/>
+      <label  className="form-label">User ID</label>
+      <input ref={userIdEle} type="text" className="form-control" />  
     </div>
-    <div className="mb-3 form-check">
-      <input type="checkbox" className="form-check-input" id="exampleCheck1"/>
-      <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
+
+
+    <div className="mb-3">
+      <label className="form-label">Post Title</label>
+      <input ref={titleEle} type="text" className="form-control" />  
     </div>
-    <button type="submit" className="btn btn-primary">Submit</button>
+    
+    <div className="mb-3">
+      <label className="form-label">Post Description</label>
+      <textarea ref={bodyEle} type="text" className="form-control" />  
+    </div>
+
+    <div className="mb-3">
+      <label className="form-label">Post Reactions</label>
+      <input ref={reactionsEle} type="text" className="form-control" />  
+    </div>
+    
+    <div className="mb-3">
+      <label className="form-label">Enter Hashtags</label>
+      <input ref={tagsEle} type="text" className="form-control" />  
+    </div>
+    
+    <button type="submit" className="btn btn-primary">Post</button>
   </form>
 }
 
