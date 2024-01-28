@@ -3,6 +3,7 @@ import { createContext, useReducer } from "react";
 export const PostContext = createContext({
     postList: [], 
     addPost: () => {},
+    addPosts: () => {},
     deletePost: () => {},
 })
 
@@ -15,11 +16,14 @@ const reducerFun = (currentList, action) => {
     } else if (action.type === 'add_post') {
         newList = [{
                     id: action.newPostObj.id,
-                    postTitle: action.newPostObj.postTitle,
-                    postBody: action.newPostObj.postBody,
+                    title: action.newPostObj.title,
+                    body: action.newPostObj.body,
                     reactions: action.newPostObj.reactions,
                     tags: action.newPostObj.tags,
         }, ...currentList]
+    }
+    else if (action.type === 'Add_Initial_Posts') {
+        newList = action.payload.posts
     }
 
     return newList
@@ -35,22 +39,22 @@ const ContextProvider = ({children}) => {
         dispatchPostList({postId: id, type: 'delete_post'})
     };
 
+    const addPosts = (posts) => {
+        dispatchPostList({
+            type: 'Add_Initial_Posts',
+            payload: {posts}
+        })
+    }
+
     const [postList, dispatchPostList] = useReducer(reducerFun, DefaultList);
 
     // const [state, dispatch] = useReducer(reducer, { age: 42 });
 
 
-    return <PostContext.Provider value={{addPost, deletePost, postList}} >{children}</PostContext.Provider>
+    return <PostContext.Provider value={{addPost, addPosts, deletePost, postList}} >{children}</PostContext.Provider>
 }
 
-const DefaultList = [{
-                    id: 32,
-                    postTitle: 'Asus Computers',
-                    postBody: 'Using it from 2 years and found good product!',
-                    reactions: 25,
-                    tags: ['#ASUS', '#Computer', '#Laptop']                        
-},
-]
+const DefaultList = []
 
 
 export default ContextProvider;

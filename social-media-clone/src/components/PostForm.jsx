@@ -11,13 +11,15 @@ const PostForm = () => {
   const pBody = useRef()
   const pTags = useRef()
   const pReactions = useRef()
+  const pUserId = useRef()
 
   const handleForm = (event) => {
     event.preventDefault();
 
     let newPostObj = {id: pId.current.value,
-      postTitle: pTitle.current.value,
-      postBody: pBody.current.value,
+      userId: pUserId.current.value,
+      title: pTitle.current.value,
+      body: pBody.current.value,
       reactions: pReactions.current.value,
       tags: pTags.current.value.split(' '),
     }
@@ -29,6 +31,7 @@ const PostForm = () => {
     pBody.current.value = ''
     pReactions.current.value = ''
     pTags.current.value = ''
+    pUserId.current.value = ''
 
   }
 
@@ -42,6 +45,11 @@ const PostForm = () => {
     <div className="mb-3">
       <label htmlFor="exampleInputEmail1" className="form-label">Post ID</label>
       <input ref={pId} type="text" className="form-control"/>
+    </div>
+    
+    <div className="mb-3">
+      <label htmlFor="exampleInputEmail1" className="form-label">User ID</label>
+      <input ref={pUserId} type="text" className="form-control"/>
     </div>
     
     <div className="mb-3">

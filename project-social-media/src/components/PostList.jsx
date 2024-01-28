@@ -10,12 +10,20 @@ const PostList = () => {
     // If you dont pass second arg, it will run in a loop. It should be avoided.
     useEffect(() => {
         setFetching(true)
+
+        const controller = new AbortController();
+        const signal = controller.signal;
         
-        fetch('https://dummyjson.com/posts')
+        fetch('https://dummyjson.com/posts', {signal})
         .then((data) => data.json())
         .then((data) => {addPosts( data.posts );
             setFetching(false);
         });
+
+        return () => {
+            console.log('cleaning up Use Effect!');
+            controller.abort();
+        }
         
         
     }, [] )
