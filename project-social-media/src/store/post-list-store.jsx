@@ -1,12 +1,16 @@
-import { createContext, useReducer } from "react";
+import { createContext, useCallback, useEffect, useState, useReducer } from "react";
+
+
 
 export const PostList = createContext({
+    fetching: false,
     postList: [],
     addPost: () => {},
-    addPosts: () => {},
     deletePost: () => {},
     
 });
+
+
 
 
 // Below is the Reducer function 
@@ -19,19 +23,20 @@ const postListReducer = (currentPostList, action) => {
 
         // postId, postTitle, postBody, postReactions, postUserid, postTags
 
-        newPostList = [{
-        id: action.payload.postId,
-        title: action.payload.postTitle,
-        body: action.payload.postBody,
-        reactions: action.payload.postReactions,
-        userId: action.payload.postReactions,
-        tags: action.payload.postTags.split(' '),
+        newPostList = [{id: action.payload.post.id,
+            title: action.payload.post.title,
+            body: action.payload.post.body,
+            userId: action.payload.post.userId,
+            tags: action.payload.post.tags,
+            reactions: action.payload.post.reactions,
     }, ...currentPostList]
 
     }
 
     else if (action.type === 'Add_initial_Posts') {
-        newPostList = action.payload.posts;
+        newPostList = action.payload.posts.posts;
+        console.log(action.payload.posts.posts)
+        console.log('Fresh Fetch request called');
     }
 
 
@@ -41,45 +46,70 @@ const postListReducer = (currentPostList, action) => {
 
 const PostListProvider = ({children}) => {
 
-    const addPost = (postId, postTitle, postBody, postReactions, postUserid, postTags) => {
+    // use reducer takes two arguments 1: Reducer function, 2: Default Value 
+    const [postList, dispatchPostList] = useReducer(postListReducer, Default_Post_list);
+
+    const [fetching, setFetching] = useState(false)
+
+    useEffect(() => {
+        setFetching(true);
+        fetch('https://dummyjson.com/posts')
+            .then(res => res.json())
+            .then(posts => {addPosts(posts);
+                setFetching(false);
+            });
+    }, [])
+
+    const addPosts = (posts) => {
+        setFetching(true)
+        dispatchPostList({
+          type: 'Add_initial_Posts',
+          payload: {posts},
+        })
+        
+    }
+
+    const addPost = (post) => {
 
         dispatchPostList({
             type: 'Add_Post',
-            payload: {postId, postTitle, postBody, postReactions, postUserid, postTags},
+            payload: {post},
         })
     }
 
-    const addPosts = (posts) => {
-      dispatchPostList({
-        type: 'Add_initial_Posts',
-        payload: {posts},
-      })
-      
-    }
+// Use CallBack Function to avoid frequent paint cycles
+// Workes same as useEffect function which takes a method and array of dependencies as arguments
+// useCallback(fn, dependencies)
 
-
-    const deletePost = (postID) => {
+    const deletePost = useCallback((postID) => {
         dispatchPostList({
             type: 'Delete_Post',
             payload: {postID},
         });
 
-    };
+    }, [dispatchPostList]);
 
 
-    // use reducer takes two arguments 1: Reducer function, 2: Default Value 
-    const [postList, dispatchPostList] = useReducer(postListReducer, Default_Post_list);
+    
 
 
     // create context has a .provider method. using it here  
     // using that as a react component 
-    return <PostList.Provider value={{postList, addPosts, addPost, deletePost}}> 
+    return <PostList.Provider value={{postList, fetching, addPost, deletePost}}> 
     {children} 
     </PostList.Provider>;
 
 }
 
 const Default_Post_list = [];
+
+
+// An example of useMemo:
+// const myArray = [1, 5, 6, 8];
+// const sortedArray = useMemo( ()=> {myArray.sort()}, [myArray] );
+// const sortedArray = useMemo( ()=> myArray.sort(), [myArray] ); Sir written like this..
+
+
 
 export default PostListProvider;
 // using this PostListProvider inside App.jsx 

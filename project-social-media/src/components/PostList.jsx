@@ -4,11 +4,12 @@ import { PostList as postListData } from "../store/post-list-store";
 import LoadingSpinner from "./LoadingSpinner";
 const PostList = () => {
 
-    const [fetching, setFetching] = useState(false)
+    const {postList, fetching} = useContext(postListData);
+    
 
     // Use effect takes 2 args, one fuunction and another dependencies
     // If you dont pass second arg, it will run in a loop. It should be avoided.
-    useEffect(() => {
+   /* useEffect(() => {
         setFetching(true)
 
         const controller = new AbortController();
@@ -21,16 +22,16 @@ const PostList = () => {
         });
 
         return () => {
-            console.log('cleaning up Use Effect!');
+            
             controller.abort();
         }
         
         
-    }, [] )
+    }, [] ) */
 
     
     
-        const {postList, addPosts} = useContext(postListData)
+        
 
     return <>
 
